@@ -24,19 +24,20 @@ const trackConditions = [
 ];
 function read_and_transformData() {
     return __awaiter(this, void 0, void 0, function* () {
-        const validTracks = yield dataLoading.readCsvFile('data/tracksTest.csv', trackConditions, trackSchema_1.trackSchema);
+        // const validTracks = await dataLoading.readCsvFile<Track>('data/tracksTest.csv', trackConditions, trackSchema);
+        const validTracks = yield dataLoading.readCsvFile('data/tracks.csv', trackConditions, trackSchema_1.trackSchema);
         // const transformedTracks = transform...
         // Get unique artist IDs from valid tracks
         const validArtistIds = new Set(validTracks.flatMap(track => {
             return track.id_artists;
         }));
-        const allArtists = yield dataLoading.readCsvFile('data/artistsTest.csv', [], trackSchema_1.artistSchema);
+        // const allArtists = await dataLoading.readCsvFile<Artist>('data/artistsTest.csv', [], artistSchema);
+        const allArtists = yield dataLoading.readCsvFile('data/artists.csv', [], trackSchema_1.artistSchema);
         // Filter artists based on valid track IDs
         const validArtists = allArtists.filter((artist) => {
             return validArtistIds.has(artist.id);
         });
-        if (validArtists.length < 10)
-            console.log('Filtered artists:', validArtists);
+        console.log('Filtered artists:', validArtists);
     });
 }
 read_and_transformData();

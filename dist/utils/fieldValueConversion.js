@@ -29,7 +29,9 @@ exports.toBoolean = toBoolean;
 // Conversion function for string arrays (JSON-encoded)
 const toStringArray = (input) => {
     try {
-        const parsed = JSON.parse(input.replace(/'/g, '"'));
+        // const parsed = JSON.parse(input.replace('"[', '[').replace(']"', ']').replace(/'/g, '"'));
+        // const parsed = JSON.parse(input.replace(/'/g, '"'));
+        const parsed = sanitizeAndParse(input);
         if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
             return parsed;
         }
@@ -40,3 +42,27 @@ const toStringArray = (input) => {
     return null;
 };
 exports.toStringArray = toStringArray;
+function sanitizeAndParse(input) {
+    let sanitizedInput = input;
+    // Detect and handle Python-list-like strings
+    if (sanitizedInput.startsWith("['") && sanitizedInput.endsWith("']")) {
+        sanitizedInput = sanitizedInput.replace(/'/g, '"');
+    }
+    // Handle double-quoted strings (for JSON-like arrays)
+    else if (sanitizedInput.startsWith('"["') && sanitizedInput.endsWith('"]"')) {
+        sanitizedInput = sanitizedInput.slice(1, -1).replace(/""/g, '"');
+    }
+    // Convert single double-quoted inside (for JSON-like arrays within double quotes)
+    sanitizedInput = sanitizedInput.replace(/""/g, '"');
+    return parseJson(sanitizedInput);
+}
+function parseJson(sanitizedInput) {
+    try {
+        // Parse the sanitized input as JSON
+        return JSON.parse(sanitizedInput);
+    }
+    catch (error) {
+        console.error("Failed to parse:", sanitizedInput, "; Error:", error);
+        return null;
+    }
+}

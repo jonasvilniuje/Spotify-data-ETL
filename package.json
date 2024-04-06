@@ -10,7 +10,10 @@
     "dev": "tsc-watch --onSuccess \"node dist/index.js\""
   },
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/dist/$1"
+    }
   },
   "keywords": [],
   "author": "",

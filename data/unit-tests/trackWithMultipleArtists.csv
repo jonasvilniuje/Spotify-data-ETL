@@ -1,0 +1,2 @@
+id,name,popularity,duration_ms,explicit,artists,id_artists,release_date,danceability,energy,key,loudness,mode,speechiness,acousticness,instrumentalness,liveness,valence,tempo,time_signature
+1MD0Obbza9l0t0Zpgcwagy,And Mimi,0,186147,0,"['Dick Haymes      ', 'Gordon Jenkins', 'His Orchestra']","['3BiJGZsyX9sJchTqcSA7Su', '58wzyK6DupVsypvs3QV2Fo', '6lXiGaWjISZnER53ZJe6QO']",1922,0.284,0.223,9,-15.733,0,0.0453,0.98,0.0813,0.345,0.226,77.234,3

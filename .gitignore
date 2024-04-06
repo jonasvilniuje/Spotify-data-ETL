@@ -1,0 +1,5 @@
+node_modules
+*.pdf
+tracks.csv
+artists.csv
+dict_artists.json

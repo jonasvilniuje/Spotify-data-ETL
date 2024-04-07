@@ -39,20 +39,24 @@ export const toStringArray: Validator<string[]> = (input) => {
 };
 
 function sanitizeAndParse(input: any) {
-  let sanitizedInput = input;
+  console.log(`input: ${typeof input} ${input}`);
+  
+  let sanitizedInput = input.trim();
+  // let sanitizedInput = input;
 
   // Detect and handle Python-list-like strings
-  if (sanitizedInput.startsWith("['") && sanitizedInput.endsWith("']")) {
-    sanitizedInput = sanitizedInput.replace(/'/g, '"');
+  if (sanitizedInput.startsWith(`['`) && sanitizedInput.endsWith(`']`)) {
+    sanitizedInput = sanitizedInput.replace(/'/g, `"`);
   }
   // Handle double-quoted strings (for JSON-like arrays)
-  else if (sanitizedInput.startsWith('"["') && sanitizedInput.endsWith('"]"')) {
-    sanitizedInput = sanitizedInput.slice(1, -1).replace(/""/g, '"');
+  else if (sanitizedInput.startsWith(`"["`) && sanitizedInput.endsWith(`"]"`)) {
+    sanitizedInput = sanitizedInput.slice(1, -1).replace(/""/g, `"`);
   }
   // Convert single double-quoted inside (for JSON-like arrays within double quotes)
-  sanitizedInput = sanitizedInput.replace(/""/g, '"');
-
-  return parseJson(sanitizedInput);
+  sanitizedInput = sanitizedInput.replace(/""/g, `"`);
+  sanitizedInput = parseJson(sanitizedInput);
+  if (sanitizedInput != null && typeof sanitizedInput != 'object') sanitizedInput = sanitizeAndParse(sanitizedInput);
+  return sanitizedInput;
 }
 
 function parseJson(sanitizedInput: any) {

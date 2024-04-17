@@ -10,7 +10,7 @@ describe('Handling data conversions', () => {
     });
 
     it('Should convert a String to String Array inside double quotes', () => {
-        let arrayInString = `"['Dick Haymes', 'Gordon Jenkins', 'His Orchestra']"`;
+        const arrayInString = `"['Dick Haymes', 'Gordon Jenkins', 'His Orchestra']"`;
 
         // "[""Clarence Williams' Blue Five""]"
 
@@ -21,7 +21,7 @@ describe('Handling data conversions', () => {
 
     
     it('Should convert a String to String Array inside double quotes', () => {
-        let arrayInString = `"[""Clarence Williams' Blue Five""]"`;
+        const arrayInString = `"[""Clarence Williams' Blue Five""]"`;
 
         const result = toStringArray(arrayInString);
         expect(result).toBeInstanceOf(Object);

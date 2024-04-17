@@ -25,8 +25,6 @@ export const toBoolean: Validator<boolean> = (input) => {
 // Conversion function for string arrays (JSON-encoded)
 export const toStringArray: Validator<string[]> = (input) => {
   try {
-    // const parsed = JSON.parse(input.replace('"[', '[').replace(']"', ']').replace(/'/g, '"'));
-    // const parsed = JSON.parse(input.replace(/'/g, '"'));
     const parsed = sanitizeAndParse(input)
     
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
@@ -39,10 +37,9 @@ export const toStringArray: Validator<string[]> = (input) => {
 };
 
 function sanitizeAndParse(input: any) {
-  console.log(`input: ${typeof input} ${input}`);
+  // console.log(`input: ${typeof input} ${input}`);
   
   let sanitizedInput = input.trim();
-  // let sanitizedInput = input;
 
   // Detect and handle Python-list-like strings
   if (sanitizedInput.startsWith(`['`) && sanitizedInput.endsWith(`']`)) {
@@ -56,6 +53,7 @@ function sanitizeAndParse(input: any) {
   sanitizedInput = sanitizedInput.replace(/""/g, `"`);
   sanitizedInput = parseJson(sanitizedInput);
   if (sanitizedInput != null && typeof sanitizedInput != 'object') sanitizedInput = sanitizeAndParse(sanitizedInput);
+  
   return sanitizedInput;
 }
 
@@ -68,4 +66,5 @@ function parseJson(sanitizedInput: any) {
     return null;
   }
 }
+
 

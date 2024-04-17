@@ -7,7 +7,7 @@ export interface Track {
     artists: string[]; // Assuming this field contains JSON-encoded arrays
     id_artists: string[]; // Assuming this field contains JSON-encoded arrays
     release_date: string; // Or Date if you intend to convert the string to a Date object
-    danceability: number;
+    danceability: number | string; // todo: how to change type and leave the same column name
     energy: number;
     key: number;
     loudness: number;
@@ -19,6 +19,9 @@ export interface Track {
     valence: number;
     tempo: number;
     time_signature: number;
+    year?: string;
+    month?: string;
+    day?: string;
 }  
 
 export interface Artist {
@@ -38,3 +41,6 @@ export interface Condition {
     predicate: (value: string) => boolean;
 }
 
+export interface ValidationSchema<T> {
+    validate(data: any): { valid: boolean, instance: T | null };
+}

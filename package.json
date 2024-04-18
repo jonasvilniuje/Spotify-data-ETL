@@ -35,10 +35,11 @@
   },
   "dependencies": {
     "@babel/core": "^7.24.4",
+    "aws-sdk": "^2.1600.0",
     "csv-parser": "^3.0.0",
     "module-alias": "^2.2.3"
   },
   "_moduleAliases": {
     "@": "./dist"
-  }  
+  }
 }

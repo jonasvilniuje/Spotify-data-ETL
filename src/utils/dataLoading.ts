@@ -1,6 +1,6 @@
-/* the main file used for data loading and transforming during loading */
-/* this approach might be not the most optimal */
-/* but it prevents from iterating through large CSV datasets multiple times */
+/* the main file used for data loading and transforming during loading
+this approach might be not the most optimal
+but it prevents from iterating through large CSV datasets multiple times */
 
 import * as fs from 'fs';
 import csv from 'csv-parser';
@@ -25,20 +25,12 @@ export async function readCsvFileTracks(filePath: string, conditions: Condition[
             .pipe(csv())
             .on('data', (data: any) => {
                 if (conditionalLogic(data, conditions)) {                 
-                    const validatedTrack = validateAndConvertRow<Track>(data, schema);
+                  let validatedTrack = validateAndConvertRow<Track>(data, schema);
 
-                    if (validatedTrack !== null && validatedTrack !== undefined) {
-                      // Apply transformations
-                      // Explode date
-                      const dateParts = explodeDate(data.release_date);
-                      validatedTrack.year = dateParts.year;
-                      validatedTrack.month = dateParts.month;
-                      validatedTrack.day = dateParts.day;
-
-                      // Transform danceability number -> string
-                      validatedTrack.danceability = transformDanceability(data.danceability)
-                      results.push(validatedTrack as Track);
-                    }
+                  if (validatedTrack !== null && validatedTrack !== undefined) {
+                    validatedTrack = transformTrack(validatedTrack, data);
+                    // results.push(validatedTrack as Track);
+                  }
                 }
             })
             .on('end', () => {
@@ -80,7 +72,6 @@ export async function readCsvFileArtists(filePath: string, conditions: Condition
   });
 }
 
-
 function validateAndConvertRow<T>(row: any, schema: ValidationSchema<T>): T | null {
   const result: Partial<T> = {};
 
@@ -97,6 +88,20 @@ function validateAndConvertRow<T>(row: any, schema: ValidationSchema<T>): T | nu
   }
 
   return result as T;
+}
+
+function transformTrack(validatedTrack: Track, data: any) {
+  // Apply transformations
+  // Explode date
+  const dateParts = explodeDate(data.release_date);
+  validatedTrack.year = dateParts.year;
+  validatedTrack.month = dateParts.month;
+  validatedTrack.day = dateParts.day;
+
+  // Transform danceability number -> string
+  validatedTrack.danceability = transformDanceability(data.danceability);
+  return validatedTrack;
+  // results.push(validatedTrack as Track); // todo: remove later
 }
 
 function explodeDate(releaseDate: string): { year: string, month: string, day: string } {

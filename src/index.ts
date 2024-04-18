@@ -3,7 +3,7 @@ import dataLoading = require('@/utils/dataLoading');
 import {trackConditions} from '@/constants/conditions'
 import {trackSchema, artistSchema} from '@/schemas/trackSchema'
 
-async function read_and_transformData() {
+async function readAndTransformData() {
   const validTracks = await dataLoading.readCsvFileTracks('data/tracksTest.csv', trackConditions, trackSchema);
   // const validTracks = await dataLoading.readCsvFile<Track>('data/tracks.csv', trackConditions, trackSchema);
   // console.log('validTracks: ', validTracks);
@@ -23,8 +23,10 @@ async function read_and_transformData() {
     return validArtistIds.has(artist.id)
   });
 
-  console.log('Filtered artists:', validArtists);
-
+  // console.log('Filtered artists:', validArtists);
 }
 
-read_and_transformData();
+
+readAndTransformData()
+  .then(() => console.log('Data processing completed'))
+  .catch((err) => console.error('Error during processing:', err));

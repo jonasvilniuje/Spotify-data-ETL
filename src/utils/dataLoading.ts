@@ -8,6 +8,17 @@ import type {Track, Artist, Condition } from '@/interfaces/interfaces';
 import type { ValidationSchema } from '@/types/types';
 import {DanceabilityCategory} from '@/constants/categories'
 
+const AWS = require('aws-sdk');
+const { PassThrough } = require('stream');
+
+// Configure the AWS SDK
+AWS.config.update({
+  region: process.env.REGION, // Change to your region
+  credentials: new AWS.Credentials(process.env.ACCESS_KEY_ID, process.env.SECRET_ACCESS_KEY)
+});
+
+const s3 = new AWS.S3();
+
 function conditionalLogic(data: any, conditions: Condition[]) {
   return conditions.every(condition => {
     const { columnName, predicate } = condition;
@@ -15,33 +26,50 @@ function conditionalLogic(data: any, conditions: Condition[]) {
   });
 }
 
-export async function readCsvFileTracks(filePath: string, conditions: Condition[], schema: ValidationSchema<Track>): Promise<Track[]> {
-    const results: Track[] = [];
+export async function readCsvFileTracks(filePath: string, conditions: Condition[], schema: ValidationSchema<Track>): Promise<void> {
+  const validArtistIds = new Set();
+  const batch: Track[] = [];
+  const batchSize = 5; // Define your batch size
+  let batchIndex = 0;
 
-    return new Promise((resolve, reject) => {
-        const readStream = fs.createReadStream(filePath);
 
-        readStream
-            .pipe(csv())
-            .on('data', (data: any) => {
-                if (conditionalLogic(data, conditions)) {                 
-                  let validatedTrack = validateAndConvertRow<Track>(data, schema);
+  return new Promise((resolve, reject) => {
+    const readStream = fs.createReadStream(filePath);
 
-                  if (validatedTrack !== null && validatedTrack !== undefined) {
-                    validatedTrack = transformTrack(validatedTrack, data);
-                    // results.push(validatedTrack as Track);
+    readStream
+      .pipe(csv())
+      .on('data', (data: any) => {
+          if (conditionalLogic(data, conditions)) {
+              let validatedTrack = validateAndConvertRow<Track>(data, schema);
+              if (validatedTrack !== null) {
+                  validatedTrack = transformTrack(validatedTrack, data);
+                  batch.push(validatedTrack);
+
+                  // Save valid artists IDs
+                  validatedTrack.id_artists.flatMap(id_artist => {
+                    validArtistIds.add(id_artist)
+                    return id_artist
+                  });
+                  
+                  if (batch.length >= batchSize) {
+                      uploadToS3(batch, batchIndex++);
+                      batch.length = 0; // Clear the batch
                   }
-                }
-            })
-            .on('end', () => {
-                console.log('End of reading Track CSV file');
-                resolve(results);
-            })
-            .on('error', (error) => {
-                console.error('Error reading the Track CSV file:', error);
-                reject(error);
-            });
-    });
+              }
+          }
+      })
+      .on('end', () => {
+          if (batch.length > 0) {
+              uploadToS3(batch, batchIndex); // Upload the last batch
+          }
+          console.log('End of reading Track CSV file');
+          resolve();
+      })
+      .on('error', (error) => {
+          console.error('Error reading the Track CSV file:', error);
+          reject(error);
+      });
+  });
 }
 
 export async function readCsvFileArtists(filePath: string, conditions: Condition[], schema: ValidationSchema<Artist>): Promise<Artist[]> {
@@ -133,4 +161,24 @@ function transformDanceability(value: number | string) {
   } else {
     return DanceabilityCategory.INVALID;
   }
+}
+
+function uploadToS3(data: any[], batchIndex: number) {
+  const pass = new PassThrough();
+  const params = {
+      Bucket: 'spotify-etl-task-ts',
+      Key: `data-batch-${batchIndex}.json`,
+      Body: pass
+  };
+
+  s3.upload(params, (err: any, data: any) => {
+      if (err) {
+          console.error('Error uploading to S3:', err);
+      } else {
+          console.log('Upload Success', data.Location);
+      }
+  });
+
+  pass.write(JSON.stringify(data));
+  pass.end();
 }

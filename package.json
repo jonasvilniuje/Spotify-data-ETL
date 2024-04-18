@@ -37,6 +37,8 @@
     "@babel/core": "^7.24.4",
     "aws-sdk": "^2.1600.0",
     "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.5",
     "module-alias": "^2.2.3"
   },
   "_moduleAliases": {

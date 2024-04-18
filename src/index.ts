@@ -1,3 +1,4 @@
+require('dotenv').config();
 require('module-alias/register');
 import dataLoading = require('@/utils/dataLoading');
 import {trackConditions} from '@/constants/conditions'
@@ -9,9 +10,9 @@ async function readAndTransformData() {
   // console.log('validTracks: ', validTracks);
   
   // Get unique artist IDs from valid tracks
-  const validArtistIds = new Set(validTracks.flatMap(track => {    
-    return track.id_artists
-  }));
+  // const validArtistIds = new Set(validTracks.flatMap(track => {    
+  //   return track.id_artists
+  // }));
   
   // console.log(validArtistIds);
   
@@ -19,9 +20,9 @@ async function readAndTransformData() {
   // // const allArtists = await dataLoading.readCsvFile<Artist>('data/artists.csv', [], artistSchema);
   
   // // Filter artists based on valid track IDs
-  const validArtists = allArtists.filter((artist) => {
-    return validArtistIds.has(artist.id)
-  });
+  // const validArtists = allArtists.filter((artist) => {
+  //   return validArtistIds.has(artist.id)
+  // });
 
   // console.log('Filtered artists:', validArtists);
 }

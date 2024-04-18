@@ -4,3 +4,4 @@ node_modules
 tracks.csv
 artists.csv
 dict_artists.json
+.env

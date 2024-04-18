@@ -1,0 +1,2 @@
+id,name,popularity,duration_ms,explicit,artists,id_artists,release_date,danceability,energy,key,loudness,mode,speechiness,acousticness,instrumentalness,liveness,valence,tempo,time_signature
+4ejUoPIMggFTVrAyvodqJQ;St. Louis Blues (with Louis Armstrong);23;190107;false;Bessie Smith,Louis Armstrong;5ESobCkc6JI4tIMxQttqeg,19eLuQmk9aCobbVDHc6eek;1923;Low;0.145;10;-10.99;1;0.0501;0.994;0.0000473;0.138;0.294;68.8;4;1923;01;01
